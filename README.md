@@ -3,8 +3,8 @@
 Backend API for **Quiz Ludo**, a tournament game for the SorSU Bulan Campus library.
 CS 313 Software Engineering 1, A.Y. 2026-2027.
 
-- Developer: Elizabeth Lozano (elizabeth-lozano), BSCS [3-1 or 3-2]
-- Group and game concept: Group 10
+- Developer: Elizabeth Lozano (elizabeth-lozano), BSCS 3-1
+- Group and game concept: Group 10 Quiz Ludo
 
 This is my own build of my group's game concept. Every commit in this repository was made by me, with Git, on my own computer or in my own Codespace.
 
@@ -20,8 +20,8 @@ This is my own build of my group's game concept. Every commit in this repository
 ## Setup
 
 ```
-git clone [repository-url]
-cd [folder-name]
+git clone https://github.com/elizabeth-lozano/quiz-ludo-api.git
+cd quiz-ludo-api
 npm install
 ```
 
@@ -43,7 +43,7 @@ npm run dev
 | PORT | 3001 | Port the API listens on (the library assigns the final port at deployment) |
 | DB_HOST | 127.0.0.1 | PostgreSQL host |
 | DB_PORT | 5432 | PostgreSQL port |
-| DB_NAME | your_game_slug | Database name: your game slug, with underscores |
+| DB_NAME | quiz_ludo | Database name: your game slug, with underscores |
 | DB_USER | postgres | Database user |
 | DB_PASSWORD | (your own) | Database password. Never commit this. |
 | HUB_API_KEY | dev-hub-key | Key the Library Game Hub sends to read results. The library gives the real one at deployment. |
@@ -60,11 +60,20 @@ Base URL: `http://localhost:3001/api/v1`
 
 ## What "completed" means in my game
 
-[One or two sentences: when does a player count as having completed a game? For example: "A player completed the game when they answered every question, even if some answers were wrong or timed out."]
+A player completed the game if they stayed until it ended and were not replaced by a
+bot. A player who left or disconnected, so that a bot took over their seat, has
+completed = false and rank = null.
 
 ## Tables
 
-[List your tables, one line each, in the order of your migrations.]
+- users: accounts (school_id, name, email) with a role of HOST or PLAYER
+- question_sets: host-written sets of questions, each with a category
+- questions: the questions in a set, with a time limit of 5 to 60 seconds
+- choices: the answer choices of a question; exactly one is marked correct
+- game_sessions: one game, with its 6-digit join pin, status, and start and end times
+- players: one seat per account per game (UNIQUE on session and user), with nickname,
+  color, score and the positions of the two tokens
+- answers: each answer a player gave, with whether it was correct and how fast
 
 ## Database scripts
 
