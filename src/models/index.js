@@ -18,5 +18,20 @@ const sequelize = new Sequelize(
 //   User.hasMany(Player, { foreignKey: 'user_id' });
 //   Player.belongsTo(User, { foreignKey: 'user_id' });
 const User = require('./user')(sequelize, DataTypes);
+const QuestionSet = require('./question-set')(sequelize, DataTypes);
+const GameSession = require('./game-session')(sequelize, DataTypes);
+const Player = require('./player')(sequelize, DataTypes);
 
-module.exports = { sequelize, Sequelize, DataTypes, User };
+// Associations = the relationship lines of your ERD, read in both directions.
+User.hasMany(QuestionSet, { foreignKey: 'host_id' });
+QuestionSet.belongsTo(User, { foreignKey: 'host_id', as: 'host' });
+QuestionSet.hasMany(GameSession, { foreignKey: 'set_id' });
+GameSession.belongsTo(QuestionSet, { foreignKey: 'set_id' });
+User.hasMany(GameSession, { foreignKey: 'host_id' });
+GameSession.belongsTo(User, { foreignKey: 'host_id', as: 'host' });
+GameSession.hasMany(Player, { foreignKey: 'session_id' });
+Player.belongsTo(GameSession, { foreignKey: 'session_id' });
+User.hasMany(Player, { foreignKey: 'user_id' });
+Player.belongsTo(User, { foreignKey: 'user_id' });
+
+module.exports = { sequelize, Sequelize, DataTypes, User, QuestionSet, GameSession, Player };
