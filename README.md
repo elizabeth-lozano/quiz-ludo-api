@@ -85,3 +85,22 @@ completed = false and rank = null.
 | npm run db:check | Counts the rows in every table |
 | npm run db:reset | Empties the database, rebuilds every table and reloads the seed data |
 | npm run check | Runs the same automatic check that GitHub runs after every push |
+
+
+## Question sets (Module 1)
+
+Every request sends the header `X-Demo-User` with the school ID of a seeded account (login arrives in Week 12).
+
+| Verb | URL | Who may call it | Success |
+|---|---|---|---|
+| GET | /api/v1/question-sets | A host (sees own sets) or an admin (sees all sets) | 200 |
+| POST | /api/v1/question-sets | A host or an admin | 201 |
+| GET | /api/v1/question-sets/{id} | The owner of that set, or an admin | 200 |
+| PATCH | /api/v1/question-sets/{id} | The owner of that set, or an admin | 200 |
+| DELETE | /api/v1/question-sets/{id} | The owner of that set, or an admin | 204 |
+
+**Owner rule:** a host can read, change or delete only the question sets they created. Another host gets 403 FORBIDDEN, and a player cannot use any of these endpoints (403). The owner is always the caller: a client can never choose `host_id`.
+
+**Delete rule:** a question set that a game already used cannot be deleted. The API answers 409 QUESTION_SET_IN_USE.
+
+**Fields:** `title` (3 to 100 characters, required on create), `category` (1 to 40 characters, default General), `description` (optional, up to 500 characters).
