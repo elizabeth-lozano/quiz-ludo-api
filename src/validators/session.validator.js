@@ -22,4 +22,16 @@ const statusRules = [
     .isIn(['RUNNING', 'CLOSED']).withMessage('status must be RUNNING or CLOSED'),
 ];
 
-module.exports = { codeParam, createRules, statusRules };
+// nickname VARCHAR(24) NOT NULL
+const joinRules = [
+  codeParam,
+  body('nickname')
+    .exists().withMessage('nickname is required')
+    .bail()
+    .isString().withMessage('nickname must be text')
+    .bail()
+    .trim()
+    .isLength({ min: 2, max: 24 }).withMessage('nickname must be 2 to 24 characters long'),
+];
+
+module.exports = { codeParam, createRules, statusRules, joinRules };
