@@ -104,3 +104,22 @@ Every request sends the header `X-Demo-User` with the school ID of a seeded acco
 **Delete rule:** a question set that a game already used cannot be deleted. The API answers 409 QUESTION_SET_IN_USE.
 
 **Fields:** `title` (3 to 100 characters, required on create), `category` (1 to 40 characters, default General), `description` (optional, up to 500 characters).
+
+## Sessions and players (Module 2)
+
+| Verb | URL | Who may call it | Success |
+|---|---|---|---|
+| POST | /api/v1/sessions | A host or an admin | 201 |
+| GET | /api/v1/sessions/{code} | Anyone | 200 |
+| PATCH | /api/v1/sessions/{code} | The host of that game, or an admin | 200 |
+| POST | /api/v1/sessions/{code}/players | Any known account | 201 new seat, 200 rejoin |
+| GET | /api/v1/sessions/{code}/players | Anyone | 200 |
+
+**Rules:**
+- The server makes the six-digit join code (100000 to 999999). A client never chooses it.
+- A game starts as LOBBY. It can become RUNNING or CLOSED. A RUNNING game can only become CLOSED, and a CLOSED game never changes. A bad change answers 409 INVALID_STATUS_CHANGE.
+- Rejoin: an account that already has a seat in a game gets the same seat back (200), with the same score, even after the game has started.
+- A new player can join only while the game is in the lobby (409 SESSION_NOT_JOINABLE or SESSION_ENDED) and only if there is room (409 SESSION_FULL, maximum 4 players).
+- One game at a time: an account seated in a RUNNING game cannot join another (409 ALREADY_IN_GAME).
+- A nickname is unique inside a game (409 NICKNAME_TAKEN, from the database constraint).
+- Closing a game sets ended_at, and that makes it appear in /results.
