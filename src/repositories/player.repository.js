@@ -17,7 +17,7 @@ function findAllBySession(sessionId) {
 // A seat of this account in ANOTHER game that is RUNNING, or null.
 function findRunningSeatElsewhere(userId, sessionId) {
   return Player.findOne({
-    where: { user_id: userId, session_id: { [Op.ne]: sessionId }, left_at: null },
+    where: { user_id: userId, session_id: { [Op.ne]: sessionId } },
     include: [{ model: GameSession, where: { status: 'RUNNING' }, attributes: ['join_pin'] }],
   });
 }
@@ -26,4 +26,10 @@ function create(data) {
   return Player.create(data);
 }
 
-module.exports = { findSeat, findAllBySession, findRunningSeatElsewhere, create };
+
+// A returning player: remember when they came back.
+function markSeen(player) {
+  return player.update({ last_seen_at: new Date() });
+}
+
+module.exports = { findSeat, findAllBySession, findRunningSeatElsewhere, create, markSeen };

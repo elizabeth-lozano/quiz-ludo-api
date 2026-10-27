@@ -12,7 +12,10 @@ async function join(code, nickname, user) {
 
   // Q4: does this account already have a seat here? Then it is a rejoin: same seat, same score.
   const seat = await playerRepository.findSeat(session.session_id, user.user_id);
-  if (seat) return { session, player: seat, created: false };
+   if (seat) {
+    await playerRepository.markSeen(seat);
+    return { session, player: seat, created: false };
+  }
 
   // Q5: Hub Contract v1.2, one game at a time.
   const elsewhere = await playerRepository.findRunningSeatElsewhere(user.user_id, session.session_id);
@@ -33,11 +36,12 @@ async function join(code, nickname, user) {
 
   // Q8: is the nickname free? The database decides: UNIQUE (session_id, nickname).
   try {
-    const player = await playerRepository.create({
+        const player = await playerRepository.create({
       session_id: session.session_id,
       user_id: user.user_id,
       nickname,
       color,
+      last_seen_at: new Date(),
     });
     return { session, player, created: true };
   } catch (error) {
