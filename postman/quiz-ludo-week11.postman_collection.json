@@ -1431,19 +1431,19 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": ""
+      "value": "http://localhost:3001/api/v1"
     },
     {
       "key": "host",
-      "value": ""
+      "value": "2099-0001"
     },
     {
       "key": "otherHost",
-      "value": ""
+      "value": "2099-0002"
     },
     {
       "key": "player",
-      "value": ""
+      "value": "2099-1001"
     },
     {
       "key": "setId",
@@ -1455,7 +1455,7 @@
     },
     {
       "key": "player2",
-      "value": ""
+      "value": "2099-1005"
     },
     {
       "key": "code2",
