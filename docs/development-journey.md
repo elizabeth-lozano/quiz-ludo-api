@@ -1,14 +1,14 @@
-# Development journey: [your game title] API
+# Development journey: Quiz Ludo API
 
-Student: [your name] · Section: [3-1 or 3-2] · Group: [group name]
+Student: Elizabeth Lozano · Section: 3-1 · Group: Group 10
 
 One entry per milestone, written the week you did it. Newest at the bottom.
 
 ## M1 · Accounts, passwords and tokens
-- Dates worked: [e.g. Nov 4 to Nov 7, 2026] · Time spent: [hours]
-- Goal: [one sentence]
-- What I built: [files and endpoints]
-- Evidence: [pull request link] · [two or three commit hashes]
+- Dates worked: Nov 13, 2026 · Time spent: 2 hours
+- Goal: Add real accounts with hashed passwords and login tokens.
+- What I built: Installed the Weeks 12-18 kit on a new branch, feature/auth. I copied the kit's src and scripts folders, replaced the check files, current-user.js, app-error.js, the user model and the user repository, and installed the new packages (bcryptjs, jsonwebtoken, multer, cors, helmet and more). I added JWT_SECRET, JWT_EXPIRES_IN and CORS_ORIGINS to .env, .env.example and src/config/env.js, and updated .gitignore.
+- Evidence: 597fd60 (chore: install the Weeks 12-18 kit)
 - Problem I hit: [the error or wrong behaviour]
 - How I solved it: [what you tried, what worked, where you found the answer]
 - Decision I made and why: [a rule, a limit or a name, and its cost]
