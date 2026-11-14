@@ -136,5 +136,6 @@ Every seeded account uses the demo password: Demo12345
 | 2099-1004 | PLAYER |
 | 2099-1005 | PLAYER |
 | 2099-0002 | HOST |
+| 2099-0099 | ADMIN |
 
 
