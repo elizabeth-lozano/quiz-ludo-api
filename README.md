@@ -123,3 +123,18 @@ Every request sends the header `X-Demo-User` with the school ID of a seeded acco
 - One game at a time: an account seated in a RUNNING game cannot join another (409 ALREADY_IN_GAME).
 - A nickname is unique inside a game (409 NICKNAME_TAKEN, from the database constraint).
 - Closing a game sets ended_at, and that makes it appear in /results.
+
+## Demo accounts
+Every seeded account uses the demo password: (Demo12345)
+
+| School ID | Role |
+|---|---|
+| 2099-0001 | HOST |
+| 2099-1001 | PLAYER |
+| 2099-1002 | PLAYER |
+| 2099-1003 | PLAYER |
+| 2099-1004 | PLAYER |
+| 2099-1005 | PLAYER |
+| 2099-0002 | HOST |
+
+
