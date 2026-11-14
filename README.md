@@ -125,7 +125,7 @@ Every request sends the header `X-Demo-User` with the school ID of a seeded acco
 - Closing a game sets ended_at, and that makes it appear in /results.
 
 ## Demo accounts
-Every seeded account uses the demo password: (Demo12345)
+Every seeded account uses the demo password: Demo12345
 
 | School ID | Role |
 |---|---|
