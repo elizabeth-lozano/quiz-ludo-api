@@ -89,7 +89,7 @@ completed = false and rank = null.
 
 ## Question sets (Module 1)
 
-Every request sends the header `X-Demo-User` with the school ID of a seeded account (login arrives in Week 12).
+Every request that needs an account sends the header `Authorization: Bearer <token>`. Get a token from `POST /api/v1/auth/login`.
 
 | Verb | URL | Who may call it | Success |
 |---|---|---|---|
