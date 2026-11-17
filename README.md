@@ -139,3 +139,21 @@ Every seeded account uses the demo password: Demo12345
 | 2099-0099 | ADMIN |
 
 
+## Accounts and users (Week 12)
+
+Log in with `POST /api/v1/auth/login` and send the token as `Authorization: Bearer <token>`. A token lasts one hour.
+
+| Verb | URL | Who may call it | Success |
+|---|---|---|---|
+| POST | /api/v1/auth/register | Anyone | 201 (always a PLAYER) |
+| POST | /api/v1/auth/login | Anyone | 200 { token, token_type, expires_in, user } |
+| GET | /api/v1/auth/me | Any logged-in account | 200 { user } |
+| GET | /api/v1/users | An admin | 200 |
+| PATCH | /api/v1/users/{id}/role | An admin | 200 |
+
+**Rules:**
+- Passwords are stored as bcrypt hashes and are never returned. A password has 8 to 72 bytes, with a letter and a number.
+- Registering always creates a PLAYER. A `role` in the body is ignored.
+- A wrong password and an unknown school ID get the same 401 INVALID_CREDENTIALS.
+- No token or a bad token gives 401. A known account with the wrong role gives 403.
+- An admin cannot change their own role (409 CANNOT_CHANGE_OWN_ROLE).
