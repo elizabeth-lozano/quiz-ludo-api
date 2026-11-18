@@ -18,5 +18,15 @@ module.exports = {  game_sessions_set_id_fkey: {
     status: 409,
     code: 'NICKNAME_TAKEN',
     message: 'That nickname is already used in this game.',
+  },
+  users_school_id_key: {
+    status: 409,
+    code: 'SCHOOL_ID_TAKEN',
+    message: 'An account with this school ID already exists.',
+  },
+  users_email_key: {
+    status: 409,
+    code: 'EMAIL_TAKEN',
+    message: 'An account with this email already exists.',
   },};
 
