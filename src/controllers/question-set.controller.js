@@ -1,5 +1,6 @@
 const { matchedData } = require('express-validator');
 const questionSetService = require('../services/question-set.service');
+const { envelope } = require('../utils/paginate');
 
 // What a client is allowed to see of a question set.
 function toJson(questionSet) {
@@ -14,8 +15,9 @@ function toJson(questionSet) {
 }
 
 async function list(req, res) {
-  const questionSets = await questionSetService.list(req.user);
-  res.status(200).json(questionSets.map(toJson));
+  const { page = 1, limit = 10, sort, order, q } = matchedData(req, { locations: ['query'] });
+  const { rows, count } = await questionSetService.list(req.user, { page, limit, sort, order, q });
+  res.status(200).json(envelope(rows.map(toJson), count, { page, limit }));
 }
 
 async function get(req, res) {
