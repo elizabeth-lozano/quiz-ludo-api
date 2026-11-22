@@ -1,13 +1,28 @@
+const { Op } = require('sequelize');
 const { QuestionSet } = require('../models');
+const { toOffset } = require('../utils/paginate');
 
-// An admin sees every set.
-function findAll() {
-  return QuestionSet.findAll({ order: [['set_id', 'ASC']] });
+// A host sees only their own sets (hostId). An admin passes null and sees all of them.
+// q looks in the title and the category.
+function buildWhere({ hostId, q }) {
+  const where = {};
+  if (hostId) where.host_id = hostId;
+  if (q) {
+    where[Op.or] = [
+      { title: { [Op.iLike]: `%${q}%` } },
+      { category: { [Op.iLike]: `%${q}%` } },
+    ];
+  }
+  return where;
 }
 
-// A host sees only their own sets.
-function findAllByHost(hostId) {
-  return QuestionSet.findAll({ where: { host_id: hostId }, order: [['set_id', 'ASC']] });
+// One page of rows, and the total number of matching rows, in two queries.
+function findPage({ hostId, q, sort = 'set_id', order = 'asc', page, limit }) {
+  return QuestionSet.findAndCountAll({
+    where: buildWhere({ hostId, q }),
+    order: [[sort, order.toUpperCase()], ['set_id', 'ASC']], // set_id breaks ties, so pages never overlap
+    ...toOffset({ page, limit }),
+  });
 }
 
 function findById(id) {
@@ -26,4 +41,4 @@ function remove(questionSet) {
   return questionSet.destroy();
 }
 
-module.exports = { findAll, findAllByHost, findById, create, update, remove };
+module.exports = { findPage, findById, create, update, remove };
