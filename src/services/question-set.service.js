@@ -14,10 +14,9 @@ function isOwner(questionSet, user) {
 }
 
 // Rule: a host sees their own sets. An admin sees every set.
-function list(user) {
-  return user.role === 'ADMIN'
-    ? questionSetRepository.findAll()
-    : questionSetRepository.findAllByHost(user.user_id);
+function list(user, options) {
+  const hostId = user.role === 'ADMIN' ? null : user.user_id;
+  return questionSetRepository.findPage({ hostId, ...options });
 }
 
 // Rule: a set can be read only by its owner or by an admin.
