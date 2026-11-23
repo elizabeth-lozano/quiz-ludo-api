@@ -1136,6 +1136,355 @@
       ]
     },
     {
+      "name": "Question Bank",
+      "item": [
+        {
+          "name": "qs-page-1-200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", function () {\r\n  pm.response.to.have.status(200);\r\n});\r\npm.test(\"answer has data and meta\", function () {\r\n  const body = pm.response.json();\r\n  pm.expect(body.data).to.be.an(\"array\");\r\n  pm.expect(body.meta).to.have.all.keys(\"page\", \"limit\", \"total\", \"pages\");\r\n});\r\npm.test(\"at most 2 rows, and the meta repeats my query\", function () {\r\n  const body = pm.response.json();\r\n  pm.expect(body.data.length).to.be.at.most(2);\r\n  pm.expect(body.meta.page).to.eql(1);\r\n  pm.expect(body.meta.limit).to.eql(2);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hostToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question-sets?page=1&limit=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "question-sets"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "qs-page-beyond-200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200, not 404\", function () {\r\n  pm.response.to.have.status(200);\r\n});\r\npm.test(\"the list is empty but the meta is there\", function () {\r\n  const body = pm.response.json();\r\n  pm.expect(body.data).to.be.an(\"array\").that.is.empty;\r\n  pm.expect(body.meta.page).to.eql(999);\r\n  pm.expect(body.meta.total).to.be.a(\"number\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hostToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question-sets?page=999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "question-sets"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "999"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "qs-search-200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", function () {\r\n  pm.response.to.have.status(200);\r\n});\r\npm.test(\"the search found the seeded set\", function () {\r\n  const body = pm.response.json();\r\n  pm.expect(body.data.length).to.be.at.least(1);\r\n  const text = (body.data[0].title + \" \" + body.data[0].category).toLowerCase();\r\n  pm.expect(text).to.include(\"library\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hostToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question-sets?q=library",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "question-sets"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "library"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "qs-search-empty-200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", function () {\r\n  pm.response.to.have.status(200);\r\n});\r\npm.test(\"nothing matches, so the list is empty and the total is 0\", function () {\r\n  const body = pm.response.json();\r\n  pm.expect(body.data).to.be.an(\"array\").that.is.empty;\r\n  pm.expect(body.meta.total).to.eql(0);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hostToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question-sets?q=zzzzzz",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "question-sets"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "zzzzzz"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "qs-sort-created-desc-200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", function () {\r\n  pm.response.to.have.status(200);\r\n});\r\npm.test(\"newest first\", function () {\r\n  const rows = pm.response.json().data;\r\n  for (let i = 1; i < rows.length; i += 1) {\r\n    pm.expect(new Date(rows[i - 1].created_at).getTime())\r\n      .to.be.at.least(new Date(rows[i].created_at).getTime());\r\n  }\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hostToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question-sets?sort=created_at&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "question-sets"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "created_at"
+                },
+                {
+                  "key": "order",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "qs-bad-sort-400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", function () {\r\n  pm.response.to.have.status(400);\r\n});\r\npm.test(\"code is VALIDATION_FAILED\", function () {\r\n  pm.expect(pm.response.json().error.code).to.eql(\"VALIDATION_FAILED\");\r\n});\r\npm.test(\"the message lists the allowed columns\", function () {\r\n  pm.expect(pm.response.json().error.message).to.include(\"sort must be one of\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hostToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question-sets?sort=password_hash",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "question-sets"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "password_hash"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "qs-bad-limit-400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", function () {\r\n  pm.response.to.have.status(400);\r\n});\r\npm.test(\"code is VALIDATION_FAILED\", function () {\r\n  pm.expect(pm.response.json().error.code).to.eql(\"VALIDATION_FAILED\");\r\n});\r\npm.test(\"the message is about the limit\", function () {\r\n  pm.expect(pm.response.json().error.message).to.include(\"limit\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hostToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question-sets?limit=100",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "question-sets"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Create question set (201)",
       "event": [
         {
