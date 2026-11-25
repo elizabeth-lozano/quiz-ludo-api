@@ -13,4 +13,9 @@ function update(session, changes) {
   return session.update(changes);
 }
 
-module.exports = { findByCode, create, update };
+// Has any game ever been created from this question set?
+async function existsForSet(setId) {
+  return (await GameSession.count({ where: { set_id: setId } })) > 0;
+}
+
+module.exports = { findByCode, create, update, existsForSet };
