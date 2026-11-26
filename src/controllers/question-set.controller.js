@@ -1,6 +1,7 @@
 const { matchedData } = require('express-validator');
 const questionSetService = require('../services/question-set.service');
 const { envelope } = require('../utils/paginate');
+const { toJson: questionToJson } = require('./question-json');
 
 // What a client is allowed to see of a question set.
 function toJson(questionSet) {
@@ -21,7 +22,12 @@ async function list(req, res) {
 }
 
 async function get(req, res) {
-  const { id } = matchedData(req);
+  const { id, include } = matchedData(req);
+  if (include === 'questions') {
+    const questionSet = await questionSetService.getWithQuestions(id, req.user);
+    res.status(200).json({ ...toJson(questionSet), questions: questionSet.questions.map(questionToJson) });
+    return;
+  }
   const questionSet = await questionSetService.get(id, req.user);
   res.status(200).json(toJson(questionSet));
 }

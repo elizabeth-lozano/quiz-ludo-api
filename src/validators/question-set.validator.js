@@ -56,4 +56,10 @@ const search = query('q')
 // another column or inject SQL through the URL.
 const listRules = [...pageRules, ...sortRules(['title', 'category', 'created_at']), search];
 
-module.exports = { idParam, createRules, updateRules, listRules };
+// "Read one" may also ask for ?include=questions.
+const getRules = [
+  idParam,
+  query('include').optional().isIn(['questions']).withMessage('include must be questions'),
+];
+
+module.exports = { idParam, createRules, updateRules, listRules, getRules};

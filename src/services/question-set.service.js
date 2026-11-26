@@ -51,4 +51,16 @@ async function remove(id, user) {
   await questionSetRepository.remove(questionSet);
 }
 
-module.exports = { list, get, create, update, remove };
+// Rule: the same owner rule as get(), but the questions and choices come along.
+async function getWithQuestions(id, user) {
+  const questionSet = await questionSetRepository.findByIdWithQuestions(id);
+  if (!questionSet) {
+    throw notFound('QUESTION_SET_NOT_FOUND', `No question set has the id ${id}.`);
+  }
+  if (!isOwner(questionSet, user)) {
+    throw forbidden('This question set belongs to another host.');
+  }
+  return questionSet;
+}
+
+module.exports = { list, get, create, update, remove, getWithQuestions };

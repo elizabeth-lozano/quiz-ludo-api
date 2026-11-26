@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { QuestionSet } = require('../models');
+const { QuestionSet, Question, Choice } = require('../models');
 const { toOffset } = require('../utils/paginate');
 
 // A host sees only their own sets (hostId). An admin passes null and sees all of them.
@@ -41,4 +41,15 @@ function remove(questionSet) {
   return questionSet.destroy();
 }
 
-module.exports = { findPage, findById, create, update, remove };
+// A set, its questions and their choices, in one query (joins), in order.
+function findByIdWithQuestions(id) {
+  return QuestionSet.findByPk(id, {
+    include: [{ model: Question, as: 'questions', include: [{ model: Choice, as: 'choices' }] }],
+    order: [
+      [{ model: Question, as: 'questions' }, 'position', 'ASC'],
+      [{ model: Question, as: 'questions' }, { model: Choice, as: 'choices' }, 'choice_index', 'ASC'],
+    ],
+  });
+}
+
+module.exports = { findPage, findById, findByIdWithQuestions, create, update, remove };
