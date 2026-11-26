@@ -7,6 +7,7 @@ const requireUser = require('../middlewares/require-user');
 const router = Router();
 
 router.use(requireUser('HOST', 'ADMIN')); // every endpoint in this file is for hosts
+router.use('/:id/questions', require('./question.routes'));
 
 router.get('/', rules.listRules, validate, controller.list);    
 router.post('/', rules.createRules, validate, controller.create);

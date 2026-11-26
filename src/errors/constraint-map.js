@@ -28,5 +28,10 @@ module.exports = {  game_sessions_set_id_fkey: {
     status: 409,
     code: 'EMAIL_TAKEN',
     message: 'An account with this email already exists.',
+  },
+  uq_questions_set_position: {
+    status: 409,
+    code: 'POSITION_CONFLICT',
+    message: 'Another question was added at the same moment. Please try again.',
   },};
 
