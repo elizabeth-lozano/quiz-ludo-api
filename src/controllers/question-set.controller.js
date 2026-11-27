@@ -12,6 +12,7 @@ function toJson(questionSet) {
     description: questionSet.description,
     host_id: questionSet.host_id,
     created_at: questionSet.created_at,
+    cover_url: questionSet.cover ? `/uploads/covers/${questionSet.cover}` : null,
   };
 }
 

@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) =>
       title: { type: DataTypes.STRING(100), allowNull: false },
       category: { type: DataTypes.STRING(40), allowNull: false, defaultValue: 'General' },
       description: { type: DataTypes.TEXT },
+      cover: { type: DataTypes.STRING(120) },
     },
     { tableName: 'question_sets', timestamps: true, createdAt: 'created_at', updatedAt: false }
   );
