@@ -1,5 +1,6 @@
 const questionSetRepository = require('../repositories/question-set.repository');
 const { notFound, forbidden } = require('../errors/app-error');
+const { removeCover } = require('../utils/cover-files');
 
 async function findOrFail(id) {
   const questionSet = await questionSetRepository.findById(id);
@@ -63,4 +64,19 @@ async function getWithQuestions(id, user) {
   return questionSet;
 }
 
-module.exports = { list, get, create, update, remove, getWithQuestions };
+// Rule: only the owner (or an admin) may change the cover. multer saves the file BEFORE this
+// runs, so when the owner rule says no, we delete the picture again. A replaced cover is deleted too.
+async function setCover(id, file, user) {
+  try {
+    const questionSet = await get(id, user); // 404 or 403
+    const previous = questionSet.cover;
+    const updated = await questionSetRepository.update(questionSet, { cover: file.filename });
+    if (previous) await removeCover(previous);
+    return updated;
+  } catch (error) {
+    await removeCover(file.filename);
+    throw error;
+  }
+}
+
+module.exports = { list, get, create, update, remove, getWithQuestions, setCover };
