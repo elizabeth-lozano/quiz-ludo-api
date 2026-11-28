@@ -16,7 +16,7 @@ async function join(req, res) {
     session: {
       code: session.join_pin,
       status: session.status,
-      current_question_index: session.current_question_index,
+      current_position: session.current_position,
     },
   });
 }

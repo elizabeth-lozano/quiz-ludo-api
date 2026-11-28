@@ -41,7 +41,7 @@ module.exports = {
     // 4. a game that has ENDED
     await queryInterface.bulkInsert('game_sessions', [{
       set_id: set.set_id, host_id: host.user_id, join_pin: '418263', status: 'CLOSED',
-      current_question_index: 3, last_die: 5, last_event: 'Mika brought both tokens home and won!',
+      current_position: 3, last_die: 5, last_event: 'Mika brought both tokens home and won!',
       winner_nickname: 'Mika',
       started_at: new Date('2026-10-09T01:00:00Z'), ended_at: new Date('2026-10-09T01:12:00Z'),
     }]);
