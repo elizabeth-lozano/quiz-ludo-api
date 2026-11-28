@@ -1,4 +1,5 @@
-const { body, param } = require('express-validator');
+const { body, param, query } = require('express-validator');
+const { pageRules, sortRules } = require('./list.validator');
 
 const idParam = param('id')
   .isInt({ min: 1 }).withMessage('id must be a positive whole number')
@@ -43,4 +44,22 @@ const updateRules = [
   }),
 ];
 
-module.exports = { idParam, createRules, updateRules };
+// ?q searches the title and the category. The value is bound as a parameter, never glued into SQL.
+const search = query('q')
+  .optional()
+  .isString().withMessage('q must be text')
+  .bail()
+  .trim()
+  .isLength({ max: 100 }).withMessage('q must be at most 100 characters long');
+
+// ?sort may only name one of these columns (an allow-list), so nobody can sort by
+// another column or inject SQL through the URL.
+const listRules = [...pageRules, ...sortRules(['title', 'category', 'created_at']), search];
+
+// "Read one" may also ask for ?include=questions.
+const getRules = [
+  idParam,
+  query('include').optional().isIn(['questions']).withMessage('include must be questions'),
+];
+
+module.exports = { idParam, createRules, updateRules, listRules, getRules};

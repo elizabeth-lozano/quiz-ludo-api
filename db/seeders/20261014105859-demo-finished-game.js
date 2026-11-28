@@ -23,8 +23,8 @@ module.exports = {
       { text: 'What do you usually need to borrow a book?',
         choices: ["A guard's permission", 'A valid school ID', 'A bookmark', 'A bag tag'], correct: 1 },
     ];
-    await queryInterface.bulkInsert('questions', questions.map((q) => ({
-      set_id: set.set_id, question_text: q.text, time_limit_sec: 15,
+        await queryInterface.bulkInsert('questions', questions.map((q, i) => ({
+      set_id: set.set_id, question_text: q.text, time_limit_sec: 15, position: i + 1,
     })));
     const [qRows] = await db.query(
       'SELECT question_id, question_text FROM questions WHERE set_id = :setId',

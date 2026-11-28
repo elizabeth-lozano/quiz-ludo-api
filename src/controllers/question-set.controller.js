@@ -1,5 +1,7 @@
 const { matchedData } = require('express-validator');
 const questionSetService = require('../services/question-set.service');
+const { envelope } = require('../utils/paginate');
+const { toJson: questionToJson } = require('./question-json');
 
 // What a client is allowed to see of a question set.
 function toJson(questionSet) {
@@ -10,16 +12,23 @@ function toJson(questionSet) {
     description: questionSet.description,
     host_id: questionSet.host_id,
     created_at: questionSet.created_at,
+    cover_url: questionSet.cover ? `/uploads/covers/${questionSet.cover}` : null,
   };
 }
 
 async function list(req, res) {
-  const questionSets = await questionSetService.list(req.user);
-  res.status(200).json(questionSets.map(toJson));
+  const { page = 1, limit = 10, sort, order, q } = matchedData(req, { locations: ['query'] });
+  const { rows, count } = await questionSetService.list(req.user, { page, limit, sort, order, q });
+  res.status(200).json(envelope(rows.map(toJson), count, { page, limit }));
 }
 
 async function get(req, res) {
-  const { id } = matchedData(req);
+  const { id, include } = matchedData(req);
+  if (include === 'questions') {
+    const questionSet = await questionSetService.getWithQuestions(id, req.user);
+    res.status(200).json({ ...toJson(questionSet), questions: questionSet.questions.map(questionToJson) });
+    return;
+  }
   const questionSet = await questionSetService.get(id, req.user);
   res.status(200).json(toJson(questionSet));
 }
@@ -43,4 +52,10 @@ async function remove(req, res) {
   res.status(204).end();
 }
 
-module.exports = { list, get, create, update, remove };
+async function setCover(req, res) {
+  const { id } = matchedData(req, { locations: ['params'] });
+  const questionSet = await questionSetService.setCover(id, req.file, req.user);
+  res.status(200).json(toJson(questionSet));
+}
+
+module.exports = { list, get, create, update, remove, setCover };

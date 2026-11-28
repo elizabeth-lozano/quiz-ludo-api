@@ -1,5 +1,6 @@
 const questionSetRepository = require('../repositories/question-set.repository');
 const { notFound, forbidden } = require('../errors/app-error');
+const { removeCover } = require('../utils/cover-files');
 
 async function findOrFail(id) {
   const questionSet = await questionSetRepository.findById(id);
@@ -14,10 +15,9 @@ function isOwner(questionSet, user) {
 }
 
 // Rule: a host sees their own sets. An admin sees every set.
-function list(user) {
-  return user.role === 'ADMIN'
-    ? questionSetRepository.findAll()
-    : questionSetRepository.findAllByHost(user.user_id);
+function list(user, options) {
+  const hostId = user.role === 'ADMIN' ? null : user.user_id;
+  return questionSetRepository.findPage({ hostId, ...options });
 }
 
 // Rule: a set can be read only by its owner or by an admin.
@@ -52,4 +52,31 @@ async function remove(id, user) {
   await questionSetRepository.remove(questionSet);
 }
 
-module.exports = { list, get, create, update, remove };
+// Rule: the same owner rule as get(), but the questions and choices come along.
+async function getWithQuestions(id, user) {
+  const questionSet = await questionSetRepository.findByIdWithQuestions(id);
+  if (!questionSet) {
+    throw notFound('QUESTION_SET_NOT_FOUND', `No question set has the id ${id}.`);
+  }
+  if (!isOwner(questionSet, user)) {
+    throw forbidden('This question set belongs to another host.');
+  }
+  return questionSet;
+}
+
+// Rule: only the owner (or an admin) may change the cover. multer saves the file BEFORE this
+// runs, so when the owner rule says no, we delete the picture again. A replaced cover is deleted too.
+async function setCover(id, file, user) {
+  try {
+    const questionSet = await get(id, user); // 404 or 403
+    const previous = questionSet.cover;
+    const updated = await questionSetRepository.update(questionSet, { cover: file.filename });
+    if (previous) await removeCover(previous);
+    return updated;
+  } catch (error) {
+    await removeCover(file.filename);
+    throw error;
+  }
+}
+
+module.exports = { list, get, create, update, remove, getWithQuestions, setCover };
