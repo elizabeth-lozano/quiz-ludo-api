@@ -157,3 +157,26 @@ Log in with `POST /api/v1/auth/login` and send the token as `Authorization: Bear
 - A wrong password and an unknown school ID get the same 401 INVALID_CREDENTIALS.
 - No token or a bad token gives 401. A known account with the wrong role gives 403.
 - An admin cannot change their own role (409 CANNOT_CHANGE_OWN_ROLE).
+
+
+## Question bank (Week 13)
+
+Lists answer `{ "data": [...], "meta": { "page", "limit", "total", "pages" } }`. An empty list is still 200.
+
+| Verb | URL | Who may call it | Success |
+|---|---|---|---|
+| GET | /api/v1/question-sets?page=&limit=&sort=&order=&q= | A host (own sets) or an admin (all sets) | 200 |
+| GET | /api/v1/question-sets/{id}?include=questions | The owner or an admin | 200 |
+| GET | /api/v1/question-sets/{id}/questions | The owner or an admin | 200 |
+| POST | /api/v1/question-sets/{id}/questions | The owner or an admin | 201 |
+| PATCH | /api/v1/question-sets/{id}/questions/{questionId} | The owner or an admin | 200 |
+| DELETE | /api/v1/question-sets/{id}/questions/{questionId} | The owner or an admin | 204 |
+| PUT | /api/v1/question-sets/{id}/cover | The owner or an admin | 200 |
+
+**Rules:**
+- `sort` may only be `title`, `category` or `created_at`. Any other column answers 400. `q` searches the title and the category.
+- A question has 2 to 4 choices and exactly one correct one (400 otherwise).
+- The server sets the position of a question (1, 2, 3...) and the number of each choice (0 to 3). Deleting a question closes the gap.
+- A question and its choices are saved together, in one transaction.
+- A set that a game already used is frozen: its questions cannot change (409 QUESTION_SET_IN_USE).
+- The cover is one PNG or JPEG of at most 1 MB (400 INVALID_FILE_TYPE, 413 FILE_TOO_LARGE). The server chooses the file name and serves it at `/uploads/covers/<name>`.
